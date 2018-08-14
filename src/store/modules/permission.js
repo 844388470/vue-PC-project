@@ -1,4 +1,4 @@
-import { constantRouterMap } from '@/router'
+// import { constantRouterMap } from '@/router'
 
 const _import = require('../../router/_import_' + process.env.NODE_ENV)
 
@@ -12,22 +12,37 @@ function addRouter(menulist) {
           path: menu[i].path,
           component: _import('index'),
           icon: menu[i].icon,
+          meta:{menu:true},
+          radius: menu[i].is_hidden===0,
           // icon: 'el-icon-location',
           children: []
         })
         for(let j in menu[i].children){
           if(menu[i].children[j].children&&menu[i].children[j].children.length!==0){
             navlist[navlist.length-1].children.push({
-              path: menu[i].children[j].path,name:menu[i].children[j].name,component: _import('layer'),children:[]
+              path: menu[i].children[j].path,
+              name:menu[i].children[j].name,
+              meta:{menu:true},
+              radius:menu[i].children[j].is_hidden===0,
+              component: _import('layer'),children:[]
             })
             for(let k in menu[i].children[j].children){
               navlist[navlist.length-1].children[navlist[navlist.length-1].children.length-1].children.push({
-                path: menu[i].children[j].children[k].path,name:menu[i].children[j].children[k].name,component: _import(menu[i].children[j].children[k].rel),meta:{permissions:menu[i].children[j].children[k].permissions?menu[i].children[j].children[k].permissions:[]}
+                path: menu[i].children[j].children[k].path,
+                name:menu[i].children[j].children[k].name,
+                radius:menu[i].children[j].children[k].is_hidden===0,
+                component: _import(menu[i].children[j].children[k].rel),
+                meta:{permissions:menu[i].children[j].children[k].permissions?menu[i].children[j].children[k].permissions:[]}
               })
             }
           }else{
             navlist[navlist.length-1].children.push({
-              path: menu[i].children[j].path,name:menu[i].children[j].name,component: _import(menu[i].children[j].rel),children:[],meta:{permissions:menu[i].children[j].permissions?menu[i].children[j].permissions:[]},
+              path: menu[i].children[j].path,
+              name:menu[i].children[j].name,
+              radius:menu[i].children[j].is_hidden===0,
+              component: _import(menu[i].children[j].rel),
+              children:[],
+              meta:{permissions:menu[i].children[j].permissions?menu[i].children[j].permissions:[]}
             })
           }
         }
@@ -35,10 +50,10 @@ function addRouter(menulist) {
         navlist.push({
           path: menu[i].path,
           component: _import('index'),
-          radius:true,
+          radius: menu[i].is_hidden === 0,
           redirect: menu[i].path+'/index',
           icon: menu[i].icon,
-          children: [{path: 'index',name:menu[i].name,component: _import(menu[i].rel),meta:{permissions:menu[i].permissions?menu[i].permissions:[]}}]
+          children: [{path: 'index',name:menu[i].name,radius: menu[i].is_hidden === 0,component: _import(menu[i].rel),meta:{permissions:menu[i].permissions?menu[i].permissions:[]}}]
         })
       }
     }
@@ -48,10 +63,10 @@ function addRouter(menulist) {
       radius:true,
       redirect: '/index/index',
       icon: 'shouye',
-      children: [{path: 'index',name:'首页',component: _import('errorPage/index')}]
+      children: [{path: 'index',name:'首页',radius:true,component: _import('home/homepage')}]
     })
     navlist.push({
-      path:'*',redirect: _import('errorPage/404')
+      path:'*',component: _import('errorPage/404')
     })
     return navlist
 }

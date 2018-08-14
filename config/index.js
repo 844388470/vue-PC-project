@@ -4,8 +4,13 @@ var path = require('path')
 module.exports = {
   build: {
     env: require('./prod.env'),
-    index: path.resolve(__dirname, '../dist/pc.blade.php'),
-    assetsRoot: path.resolve(__dirname, '../dist'),
+    env_my_cs: require('./prod_my_cs.env'),
+    env_my_zs: require('./prod_my_zs.env'),
+    env_yh_cs: require('./prod_yh_cs.env'),
+    env_yh_zs: require('./prod_yh_zs.env'),
+    env_yh_show:require('./prod_yh_show.env'),
+    index: path.resolve(__dirname, process.env.type?(process.env.type==='_my_zs'?'../distmy/pc.blade.php':(process.env.type==='_yh_zs'?'../distyh/pc.blade.php':'../dist/pc.blade.php')):'../dist/pc.blade.php'),
+    assetsRoot: path.resolve(__dirname, process.env.type?(process.env.type==='_my_zs'?'../distmy':(process.env.type==='_yh_zs'?'../distyh':'../dist')):'../dist'),
     assetsSubDirectory: 'pc_static',
     assetsPublicPath: './',
     productionSourceMap: true,
@@ -23,18 +28,20 @@ module.exports = {
   },
   dev: {
     env: require('./dev.env'),
+    env_yh: require('./dev_yh.env'),
+    env_my: require('./dev_my.env'),
     port: 8082,
     autoOpenBrowser: true,
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-        '/api': {
-                target: 'https://api2.fzgi.cn',
-                pathRewrite: {
-                    '^/api': ''
-                },
-                changeOrigin: true
-            }
+        // '/api': {
+        //         target: 'https://api2.fzgi.cn',
+        //         pathRewrite: {
+        //             '^/api': ''
+        //         },
+        //         changeOrigin: true
+        //     }
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"
     // with this option, according to the CSS-Loader README

@@ -12,7 +12,8 @@ export default (Vue) => {
     }
   })
   // axios配置
-  axios.defaults.baseURL = config[process.env.NODE_ENV].host
+  // axios.defaults.baseURL = config[process.env.NODE_ENV].host
+  axios.defaults.baseURL = process.env.host
   axios.defaults.timeout = 10000
   axios.defaults.withCredentials = true
   //  添加拦截器
@@ -44,8 +45,9 @@ export default (Vue) => {
         type: 'error',
         duration: 2 * 1000
       })
-      if(Number(response.data.code)==1000){
+      if(Number(response.data.code)===1000){
         store.dispatch('setIsLogin', 0).then(res=>{
+          sessionStorage.clear()
           window.location.reload()
         })
       }

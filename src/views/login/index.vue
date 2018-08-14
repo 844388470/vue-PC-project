@@ -44,23 +44,23 @@ export default {
   name: 'login',
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!isvalidUsername(value)) {
-        callback(new Error('请输入正确的用户名'))
-      } else {
+      // if (!isvalidUsername(value)) {
+      //   callback(new Error('请输入正确的用户名'))
+      // } else {
         callback()
-      }
+      // }
     }
     const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('密码不能小于6位'))
-      } else {
+      // if (value.length < 6) {
+      //   callback(new Error('密码不能小于6位'))
+      // } else {
         callback()
-      }
+      // }
     }
     return {
       loginForm: {
-        username: '6666666666',
-        password: '111111'
+        username: localStorage.getItem('username') || '',
+        password: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -72,7 +72,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['setRouterList','setViewTagList','GenerateRoutes','setIsLogin']),
+    ...mapActions(['setRouterList','setViewTagList','GenerateRoutes','setIsLogin','setOHDGList']),
     showPwd() {
       if (this.pwdType === 'password') {
         this.pwdType = ''
@@ -84,13 +84,16 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           log.login(this.loginForm.username,this.loginForm.password).then(res=>{
+            localStorage.setItem('username',this.loginForm.username)
             pub.getMenuList().then(res=>{
               this.GenerateRoutes(res).then(data=>{
                 this.setViewTagList([]) //清空
                 this.setRouterList(data).then(()=>{
-                  this.$router.addRoutes(data) //路由重载
-                  this.setIsLogin(1)
-                  this.$router.push('index')
+                  this.setOHDGList().then(_=>{
+                    this.$router.addRoutes(data) //路由重载
+                    this.setIsLogin(1)
+                    this.$router.push('index')
+                  }).catch((_)=>{})
                 })
               })
             }).catch(()=>{
@@ -190,8 +193,8 @@ export default {
       left: 0;
       right: 0;
       width: 400px;
-      padding: 35px 35px 15px 35px;
-      margin: 200px auto;
+      padding: 115px 35px 15px 35px;
+      margin: 120px auto;
     }
     .el-form-item {
       border: 1px solid rgba(255, 255, 255, 0.1);

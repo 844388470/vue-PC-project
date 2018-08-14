@@ -1,4 +1,4 @@
 module.exports = {
   NODE_ENV: '"production"',
-  host: '"https://service.fzgi.cn"'
+  host: '"https://api2.fzgi.cn"'
 }

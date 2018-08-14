@@ -7,7 +7,9 @@ router.beforeEach((to, from, next) => {
     if(Number(store.getters.isLogin)){
       if (to.path === '/login') {
         next({ path: '/index' })
-      } else {
+      }else if(to.meta.menu){
+        next({ path: '/404' })
+      }else {
         next()
       }
     }else{
@@ -25,8 +27,9 @@ router.beforeEach((to, from, next) => {
     if (registerRouteFresh && Number(store.getters.isLogin)==1) {
       const roles = store.getters.addRouters
       store.dispatch('GenerateRoutes', roles).then((response) => {
-        // console.log(response)
-        router.addRoutes(response)
+        store.dispatch('setRouterList',response).then((res)=>{
+          router.addRoutes(response)
+        }).catch(()=>{})
       })
     }
 })

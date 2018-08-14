@@ -1,6 +1,6 @@
 export function getYearMonth(date) {
   if(date){
-    if(typeof date=='string'){
+    if(typeof date==='string'){
         return date
     }else{
         return date.getFullYear()+'-'+((date.getMonth()+1)<10?'0'+(date.getMonth()+1):(date.getMonth()+1))
@@ -12,7 +12,7 @@ export function getYearMonth(date) {
 
 export function getYearMonthDay(date) {
   if(date){
-    if(typeof date=='string'){
+    if(typeof date==='string'){
         return date
     }else{
         return date.getFullYear()+'-'+((date.getMonth()+1)<10?'0'+(date.getMonth()+1):(date.getMonth()+1))+'-'+(date.getDate()<10?'0'+date.getDate():date.getDate())
@@ -24,7 +24,7 @@ export function getYearMonthDay(date) {
 
 export function getYearMonthDayTime(date) {
   if(date){
-    if(typeof date=='string'){
+    if(typeof date==='string'){
         return date
     }else{
         return date.getFullYear()+'-'+((date.getMonth()+1)<10?'0'+(date.getMonth()+1):(date.getMonth()+1))+'-'+(date.getDate()<10?'0'+date.getDate():date.getDate())+' '+(date.getHours() < 10 ? '0' + date.getHours() : date.getHours())+':'+(date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes())+':'+(date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds())
@@ -36,7 +36,7 @@ export function getYearMonthDayTime(date) {
 
 export function getHourMinuteSecond(date) {
   if(date){
-    if(typeof date=='string'){
+    if(typeof date==='string'){
         return date
     }else{
         return (date.getHours() < 10 ? '0' + date.getHours() : date.getHours())+':'+(date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes())+':'+(date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds())
@@ -48,7 +48,7 @@ export function getHourMinuteSecond(date) {
 
 export function getHourMinute(date) {
   if(date){
-    if(typeof date=='string'){
+    if(typeof date==='string'){
         return date
     }else{
         return (date.getHours() < 10 ? '0' + date.getHours() : date.getHours())+':'+(date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes())
@@ -64,10 +64,28 @@ export function timerules(rule, value, callback){
       } else {
           callback()
       }
-  }
-
-export function filtername(id, option, value){
-      let name=option.filter( _ => id+'' === _.label)
-      return name.length!==0?name[0][value]:''
 }
 
+export function filterTree(val, that,rolestree,pk_id){
+      if(!val.children || val.children.length!==0){
+          for(let i in val.children){
+              that.$refs[rolestree].setChecked(val.children[i][pk_id],true)
+              filterTree(val.children[i],that,rolestree,pk_id)
+          }
+      }
+}
+
+export function filterName(pk_id, list){
+    let n=list.filter(_=>pk_id===_.pk_id)
+    return n.length!==0?n[0].name:''
+}
+
+export function filterNamePei(pk_id, list,id,name){
+    let n=list.filter(_=>pk_id===_[id])
+    return n.length!==0?n[0][name]:''
+}
+
+export function indexOfId(pk_id, list ,name){
+    let n=list.filter(_=>pk_id===_[name])
+    return n.length!==0
+}

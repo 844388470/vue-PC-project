@@ -1,9 +1,8 @@
 export default {
     development: {
-        // host: 'http://localhost:8082/api'
-        host: 'https://service.fzgi.cn'
+       host: 'https://api2.fzgi.cn'
     },
     production: {
-        host: 'https://service.fzgi.cn'
+        host: 'https://api2.fzgi.cn'
     }
 }

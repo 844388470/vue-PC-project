@@ -1,17 +1,17 @@
 <!-- by your name -->
 <template>
   <div class="main">
-    <div class="sidebar" :style="{width:sidebarWidth}">
+    <div class="sidebar" :style="{width:sidebarWidth,'overflow':'auto'}">
       <el-menu :default-active="$route.path" class="el-menu-vertical-demo" text-color="#fff" active-text-color="rgb(64, 158, 255)" background-color="#304156" :collapse="isCollapse">
           <template  v-for="(item,index) in routerList">
-            <router-link v-if="item.children&&item.children.length===1 && item.radius &&!item.children[0].children" :to="item.path+'/'+item.children[0].path" :key="item.children[0].name">
+            <router-link v-if="item.children&&item.children.length===1 && item.radius &&!item.children[0].children" :to="item.path+'/'+item.children[0].path" :key="item.name">
               <el-menu-item :index="item.path+'/'+item.children[0].path" class='submenu-title-noDropdown'>
                 <i :class="'icon iconfont '+item.icon"></i>
                 <span slot="title">{{item.children[0].name}}</span>
               </el-menu-item>
             </router-link>
 
-            <el-submenu v-if="item.children&& !(item.children.length===1 && item.radius &&!item.children[0].children)" :index="item.path" :key="item.name">
+            <el-submenu v-if="item.children&& !(item.children.length===1 &&!item.children[0].children)&& item.radius" :index="item.path" :key="item.name">
               <template slot="title">
                 <i :class="'icon iconfont '+item.icon"></i>
                 <span slot="title">{{item.name}}</span>
@@ -19,14 +19,14 @@
 
               <template v-for="child in item.children">
 
-                <el-submenu v-if="child.children&&child.children.length>0" :index="item.path+'/'+child.path" :key="item.name">
+                <el-submenu v-if="child.children.length>0&&child.radius" :index="item.path+'/'+child.path" :key="child.name">
                   <template slot="title">
                     <i :class="'icon iconfont '+child.icon"></i>
                     <span slot="title">{{child.name}}</span>
                   </template>
 
                   <template v-for="son in child.children">
-                    <router-link :to="item.path+'/'+child.path+'/'+son.path" :key="son.name">
+                    <router-link :to="item.path+'/'+child.path+'/'+son.path" :key="son.name" v-if="son.radius">
                       <el-menu-item :index="item.path+'/'+child.path+'/'+son.path">
                         <i :class="son.icon"></i>
                         <span slot="title">{{son.name}}</span>
@@ -35,7 +35,7 @@
                   </template>
                 </el-submenu>
 
-                <router-link v-else :to="item.path+'/'+child.path" :key="child.name">
+                <router-link v-if="!child.children.length>0&&child.radius" :to="item.path+'/'+child.path" :key="child.name">
                   <el-menu-item :index="item.path+'/'+child.path">
                     <i :class="child.icon"></i>
                     <span slot="title">{{child.name}}</span>
@@ -51,20 +51,64 @@
       <div class="topBar">
         <el-button @click="isCollapse=!isCollapse" type="text" class="iconfont icon-other collapse fl"></el-button>
         <el-breadcrumb separator-class="el-icon-arrow-right" class="fl topBar-title">
-          <el-breadcrumb-item :to="{ path: '/index/index' }" >客服系统</el-breadcrumb-item>
+          <el-breadcrumb-item :to="{ path: '/index/index' }" >护理管理平台</el-breadcrumb-item>
           <el-breadcrumb-item v-for="item in $route.matched" v-if="item.name" :key="item.path" class="no-redirect">{{item.name}}</el-breadcrumb-item>    
         </el-breadcrumb>
+        <el-dropdown class="fr" @command="handleCommand">
+          <el-button icon="el-icon-setting" class="fr btn-loading" size="medium"></el-button>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item command="a"><b>修改密码</b></el-dropdown-item>
+            <el-dropdown-item command="b"><b>退出登录</b></el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+        <!--el-button @click="signOut" style="padding: 6px 20px;margin:11px 10px 11px 0;" class="fr">退出登录</el-button-->
         <el-button :loading="loading" v-if="loading" size="medium" class="fr btn-loading"></el-button>
       </div>
       
      
       <div class="viewTag" >  
-          <el-tag   v-for="(tag,index) in viewTagList" :key="tag.name" closable :class="{active:tag.path==$route.path}" 
+          <el-tag v-for="(tag,index) in viewTagList" :key="tag.name" closable :class="{active:tag.path==$route.path}" 
           @close="handleClose(index,tag.path)"
           @click.native="jump(tag.path)"
           >{{tag.name}} </el-tag>    
       </div>
-    
+      
+      <el-dialog
+          class="editpass"
+          :visible.sync="editpassstate"
+          width="400px"
+          fullscreen
+          center>
+              <div style="height:100%">
+                  <el-scrollbar style="height:100%;" ref="scrollbar">
+                      <div element-loading-text="拼命加载中">
+                          <el-form :model="passform" label-width="100px" label-position="left" :rules="passformrules" ref="passform">
+                              <el-row :gutter="20" style="margin-left:0;margin-right:0;">
+                                  <el-col :span="24">
+                                      <el-form-item label="旧密码" prop="old_password">
+                                          <el-input  v-model="passform.old_password" placeholder="旧密码"></el-input>
+                                      </el-form-item>
+                                  </el-col>
+                                  <el-col :span="24">
+                                      <el-form-item label="新密码" prop="password">
+                                          <el-input type="password" v-model="passform.password" placeholder="新密码"></el-input>
+                                      </el-form-item>
+                                  </el-col>
+                                  <el-col :span="24">
+                                      <el-form-item label="重复新密码" prop="confirm">
+                                          <el-input type="password" v-model="passform.confirm" placeholder="重复新密码"></el-input>
+                                      </el-form-item>
+                                  </el-col>
+                              </el-row>
+                          </el-form>
+                      </div>
+                  </el-scrollbar>
+              </div>
+          <span slot="footer" class="dialog-footer">
+              <el-button size="medium" @click="editpassword" type="primary" :loading="loading">确认</el-button>
+              <el-button size="medium" @click="editpassstate = false">取 消</el-button>
+          </span>
+      </el-dialog>
 
       
      <div class="routerView">
@@ -81,16 +125,30 @@
 
 <script>
 import { mapState, mapGetters,mapActions } from 'vuex'
+import * as api from '@/api/login'
 export default {
   name:'index',
   data() {
     return {
       show:true,
       isCollapse: false,
-      sidebarWidth: '200px'
+      sidebarWidth: '200px',
+      editpassstate:false,
+      passform:{
+        old_password:'',
+        password:'',
+        confirm:''
+      },
+      passformrules:{
+        old_password:[{required:true,message:'请输入旧密码'}],
+        password:[{required:true,message:'请输入新密码'}],
+        confirm:[{required:true,message:'请再次输入新密码'}]
+      }
     }
   },
-  mounted() {console.log(this.$route)},
+  mounted() {
+    console.log(this.$route)
+  },
   methods: {
     ...mapActions(['setViewTagList']),
     //导航栏跳转
@@ -115,6 +173,52 @@ export default {
         }
       }else{
         this.$router.push('/index/index')
+      }
+    },
+    signOut(){
+      this.$confirm('是否确认退出登录?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+      }).then(_ => {
+          api.logout().then(res=>{
+              sessionStorage.clear()
+              window.location.reload()
+          }).catch(()=>{})
+      }).catch(_ => {})
+    },
+    editpassword(){
+      this.$refs['passform'].validate((valid) => {
+          if (valid) {
+              if(this.passform.password!==this.passform.confirm){
+                this.$message({
+                    message: '重复新密码不正确',
+                    type: 'warning'
+                })
+                return 
+              }
+              api.editpassword(this.passform).then(res=>{
+                  this.editpassstate=false
+                  this.$message({
+                    message: '修改成功',
+                    type: 'success'
+                })
+              }).catch(()=>{})
+          } else {
+              return false
+          }
+      })
+    },
+    handleCommand(command){
+      if(command=='a'){
+        this.passform={
+          old_password:'',
+          password:'',
+          confirm:''
+        }
+        this.editpassstate=true
+      }else if(command=='b'){
+        this.signOut()
       }
     }
   },
@@ -188,7 +292,7 @@ export default {
 
 .btn-loading {
   margin-top: 5px;
-  margin-right: 20px;
+  margin-right: 10px;
   font-size: 25px;
   padding: 5px 10px !important;
 }
@@ -233,4 +337,5 @@ export default {
       color: #606266;font-weight: 500;
       cursor: text;
   }
+  .editpass .el-dialog.is-fullscreen.el-dialog--center{height:400px;top:25%}
 </style>

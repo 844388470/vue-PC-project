@@ -8,6 +8,7 @@ import plugin from '@/plugins'
 
 import cookie from 'cookies-js'
 import ElementUI from 'element-ui'
+import $ from 'jquery'
 import 'element-ui/lib/theme-chalk/index.css'
 import './assets/icon/icon/iconfont.css'
 import './assets/icon/icon1/iconfont.css'

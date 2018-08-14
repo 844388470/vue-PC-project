@@ -41,3 +41,36 @@ export function validateEmail(email) {
   return re.test(email)
 }
 
+export function isNumber(rule,value,callback){
+  if(rule.required && !value && value!==0){
+    callback(new Error('不得为空'))
+  }else if( value && rule.positive && !(/^[0-9]+$/.test(value))){
+    callback(new Error('请输入正确类型'))
+  }else if( value && rule.regpositive && !(/^(\+|\-)?[0-9]+?$/.test(value))){
+    callback(new Error('请输入正确类型'))
+  }else if( value && !(/^(\+|\-)?[0-9]+(\.[0-9]+)?$/.test(value))){
+    callback(new Error('请输入正确类型'))
+  }else{
+      callback()
+  }
+}
+
+export function isEngNum(rule,value,callback){
+  if(rule.required && !value && value!==0){
+    callback(new Error('不得为空'))
+  }else if( value && !(/^\w+$/.test(value))){
+    callback(new Error('请输入正确类型'))
+  }else{
+      callback()
+  }
+}
+export function isInStoreCode(rule,value,callback){
+  if(rule.required && !value && value!==0){
+    callback(new Error('请输入号码'))
+  }else if( value && !(/^[0-9]{9}$/.test(value))){
+    callback(new Error('请输入9位数编码'))
+  }else{
+      callback()
+  }
+}
+

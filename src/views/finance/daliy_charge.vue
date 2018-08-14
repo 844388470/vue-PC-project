@@ -10,8 +10,8 @@ export default {
     name:'daliy_charge',
     data () {
         return {
-        };
-    },
+        }
+    }
 }
 
 </script>

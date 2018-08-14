@@ -1,9 +1,9 @@
 <template>
     <div class="Paging" style="overflow:hidden">
-        <el-col :span="3" style="textAlign:right;paddingRight:10px;">
+        <el-col :span="widths" style="textAlign:right;paddingRight:10px;">
             <span class="demonstration">调整每页显示条数</span>
         </el-col>
-        <el-col :span="16">
+        <el-col :span="24-widths">
             <el-pagination
             @size-change="changeSize"
             @current-change="changeIndex"
@@ -29,6 +29,10 @@ export default {
         },
         pageTotal: {
             type: Number
+        },
+        widths:{
+            type: Number,
+            default:3
         }
     },
     data(){
